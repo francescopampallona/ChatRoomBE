@@ -1,4 +1,4 @@
-package com.francescopampallona.chatroom.dto;
+package com.francescopampallona.chatroom.dto.request;
 
 
 import jakarta.validation.constraints.Email;

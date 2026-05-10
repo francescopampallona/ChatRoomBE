@@ -1,16 +1,14 @@
 package com.francescopampallona.chatroom.service;
 
-import com.francescopampallona.chatroom.dto.AuthResponse;
-import com.francescopampallona.chatroom.dto.LoginRequest;
-import com.francescopampallona.chatroom.dto.RegisterRequest;
-import com.francescopampallona.chatroom.dto.UserDto;
+import com.francescopampallona.chatroom.dto.response.AuthResponse;
+import com.francescopampallona.chatroom.dto.request.LoginRequest;
+import com.francescopampallona.chatroom.dto.request.RegisterRequest;
+import com.francescopampallona.chatroom.dto.response.UserDto;
 import com.francescopampallona.chatroom.model.User;
 import com.francescopampallona.chatroom.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Locale;
 
 @Service
 public class AuthService {

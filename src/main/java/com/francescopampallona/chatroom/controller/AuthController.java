@@ -1,8 +1,8 @@
 package com.francescopampallona.chatroom.controller;
 
-import com.francescopampallona.chatroom.dto.AuthResponse;
-import com.francescopampallona.chatroom.dto.LoginRequest;
-import com.francescopampallona.chatroom.dto.RegisterRequest;
+import com.francescopampallona.chatroom.dto.response.AuthResponse;
+import com.francescopampallona.chatroom.dto.request.LoginRequest;
+import com.francescopampallona.chatroom.dto.request.RegisterRequest;
 import com.francescopampallona.chatroom.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
