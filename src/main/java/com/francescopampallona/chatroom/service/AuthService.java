@@ -1,12 +1,16 @@
 package com.francescopampallona.chatroom.service;
 
 import com.francescopampallona.chatroom.dto.AuthResponse;
+import com.francescopampallona.chatroom.dto.LoginRequest;
 import com.francescopampallona.chatroom.dto.RegisterRequest;
 import com.francescopampallona.chatroom.dto.UserDto;
 import com.francescopampallona.chatroom.model.User;
 import com.francescopampallona.chatroom.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 public class AuthService {
@@ -23,7 +27,7 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
-        String username = request.getUsername().trim();
+        String username = request.getUsername().trim().toLowerCase();
         String email = request.getEmail().trim().toLowerCase();
         String password = request.getPassword();
 
@@ -50,6 +54,34 @@ public class AuthService {
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .build();
+
+        return new AuthResponse(token, userDto);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+
+        String username = request.getUsername().trim().toLowerCase();
+        String password = request.getPassword();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadCredentialsException("Credenziali non valide"));
+
+        boolean passwordMatches = passwordEncoder.matches(
+                password,
+                user.getPasswordHash()
+        );
+
+        if (!passwordMatches) {
+            throw new BadCredentialsException("Credenziali non valide");
+        }
+
+        String token = jwtService.generateToken(user);
+
+        UserDto userDto = new UserDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
 
         return new AuthResponse(token, userDto);
     }

@@ -1,6 +1,7 @@
 package com.francescopampallona.chatroom.controller;
 
 import com.francescopampallona.chatroom.dto.AuthResponse;
+import com.francescopampallona.chatroom.dto.LoginRequest;
 import com.francescopampallona.chatroom.dto.RegisterRequest;
 import com.francescopampallona.chatroom.service.AuthService;
 import jakarta.validation.Valid;
@@ -23,5 +24,12 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest loginRequest
+            ){
+        return ResponseEntity.ok(authService.login(loginRequest));
     }
 }
