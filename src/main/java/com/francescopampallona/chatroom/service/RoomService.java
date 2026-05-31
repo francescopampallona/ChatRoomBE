@@ -4,6 +4,7 @@ import com.francescopampallona.chatroom.dto.request.CreateRoomRequest;
 import com.francescopampallona.chatroom.dto.response.RoomDto;
 import com.francescopampallona.chatroom.dto.response.UserDto;
 import com.francescopampallona.chatroom.enums.RoomRole;
+import com.francescopampallona.chatroom.enums.RoomType;
 import com.francescopampallona.chatroom.mapper.RoomMapper;
 import com.francescopampallona.chatroom.model.Room;
 import com.francescopampallona.chatroom.model.RoomMember;
@@ -11,8 +12,10 @@ import com.francescopampallona.chatroom.model.User;
 import com.francescopampallona.chatroom.repository.RoomMemberRepository;
 import com.francescopampallona.chatroom.repository.RoomRepository;
 import com.francescopampallona.chatroom.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class RoomService {
@@ -48,5 +51,49 @@ public class RoomService {
 
         return roomMapper.toDto(savedRoom);
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoomDto> getAllRooms(String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        List<RoomMember> memberships = roomMemberRepository.findByUser(user);
+
+        return memberships.stream()
+                .map(RoomMember::getRoom)
+                .map(roomMapper::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public RoomDto getRoomById(Long roomId, String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        boolean isMember = roomMemberRepository.existsByRoomIdAndUserId(
+                roomId,
+                user.getId()
+        );
+
+        if (!isMember) {
+            throw new RuntimeException("Non sei autorizzato ad accedere a questa room");
+        }
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room non trovata"));
+
+        return roomMapper.toDto(room);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoomDto> getAllPublicRooms() {
+
+        return roomRepository.findByType(RoomType.PUBLIC)
+                .stream()
+                .map(roomMapper::toDto)
+                .toList();
     }
 }

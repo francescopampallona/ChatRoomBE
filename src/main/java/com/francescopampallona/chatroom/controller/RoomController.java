@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/room")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -31,4 +33,36 @@ public class RoomController {
 
         return ResponseEntity.ok(roomService.createRoom(request, user.getUsername()));
     }
+
+    @GetMapping
+    public ResponseEntity<List<RoomDto>> getAllRooms(
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                roomService.getAllRooms(user.getUsername())
+        );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomDto> getRoomById(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                roomService.getRoomById(id, user.getUsername())
+        );
+    }
+
+    @GetMapping("/public")
+    public ResponseEntity<List<RoomDto>> getAllPublicRooms() {
+        return ResponseEntity.ok(
+                roomService.getAllPublicRooms()
+        );
+    }
+
+
 }
