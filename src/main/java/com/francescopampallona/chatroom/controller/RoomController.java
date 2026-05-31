@@ -57,6 +57,7 @@ public class RoomController {
         );
     }
 
+    //TODO: return paginated data
     @GetMapping("/public")
     public ResponseEntity<List<RoomDto>> getAllPublicRooms() {
         return ResponseEntity.ok(
