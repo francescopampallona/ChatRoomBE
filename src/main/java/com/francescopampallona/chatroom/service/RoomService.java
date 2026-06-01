@@ -32,9 +32,7 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomDto createRoom(CreateRoomRequest request, String username){
-        User owner = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+    public RoomDto createRoom(CreateRoomRequest request, User owner){
 
         Room room = roomMapper.toEntity(request);
         room.setOwner(owner);
@@ -54,24 +52,17 @@ public class RoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoomDto> getAllRooms(String username) {
+    public List<RoomDto> getAllRooms(User user) {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        List<Room> rooms = roomRepository.findRoomsByUser(user);
 
-        List<RoomMember> memberships = roomMemberRepository.findByUser(user);
-
-        return memberships.stream()
-                .map(RoomMember::getRoom)
+        return rooms.stream()
                 .map(roomMapper::toDto)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public RoomDto getRoomById(Long roomId, String username) {
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+    public RoomDto getRoomById(Long roomId, User user) {
 
         boolean isMember = roomMemberRepository.existsByRoomIdAndUserId(
                 roomId,

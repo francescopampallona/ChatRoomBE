@@ -31,7 +31,7 @@ public class RoomController {
     ) {
         User user = (User) authentication.getPrincipal();
 
-        return ResponseEntity.ok(roomService.createRoom(request, user.getUsername()));
+        return ResponseEntity.ok(roomService.createRoom(request, user));
     }
 
     @GetMapping
@@ -41,7 +41,7 @@ public class RoomController {
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.ok(
-                roomService.getAllRooms(user.getUsername())
+                roomService.getAllRooms(user)
         );
     }
 
@@ -53,7 +53,7 @@ public class RoomController {
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.ok(
-                roomService.getRoomById(id, user.getUsername())
+                roomService.getRoomById(id, user)
         );
     }
 

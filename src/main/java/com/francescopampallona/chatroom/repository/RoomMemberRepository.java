@@ -9,7 +9,5 @@ import java.util.List;
 
 @Repository
 public interface RoomMemberRepository  extends JpaRepository<RoomMember, Long> {
-    List<RoomMember> findByUser(User user);
-
     boolean existsByRoomIdAndUserId(Long roomId, Long userId);
 }
