@@ -117,4 +117,18 @@ public class RoomService {
 
         return roomMapper.toDto(room);
     }
+
+    @Transactional
+    public void leaveRoom(Long roomId, User user) {
+
+        RoomMember membership = roomMemberRepository
+                .findByRoomIdAndUserId(roomId, user.getId())
+                .orElseThrow(() -> new RuntimeException("Non sei membro di questa room"));
+
+        if (membership.getRole() == RoomRole.OWNER) {
+            throw new RuntimeException("Il proprietario non può uscire dalla room");
+        }
+
+        roomMemberRepository.delete(membership);
+    }
 }

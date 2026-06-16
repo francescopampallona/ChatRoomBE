@@ -77,5 +77,16 @@ public class RoomController {
         );
     }
 
+    @DeleteMapping("/{roomId}/leave")
+    public ResponseEntity<Void> leaveRoom(
+            @PathVariable Long roomId,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+
+        roomService.leaveRoom(roomId, user);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
