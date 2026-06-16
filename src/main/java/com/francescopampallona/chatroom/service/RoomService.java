@@ -87,4 +87,34 @@ public class RoomService {
                 .map(roomMapper::toDto)
                 .toList();
     }
+
+    @Transactional
+    public RoomDto joinPublicRoom(Long roomId, User user) {
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room non trovata"));
+
+        if (room.getType() != RoomType.PUBLIC) {
+            throw new RuntimeException("Non puoi entrare direttamente in una room privata");
+        }
+
+        boolean alreadyMember = roomMemberRepository.existsByRoomIdAndUserId(
+                roomId,
+                user.getId()
+        );
+
+        if (alreadyMember) {
+            throw new RuntimeException("Sei già membro di questa room");
+        }
+
+        RoomMember roomMember = RoomMember.builder()
+                .room(room)
+                .user(user)
+                .role(RoomRole.MEMBER)
+                .build();
+
+        roomMemberRepository.save(roomMember);
+
+        return roomMapper.toDto(room);
+    }
 }

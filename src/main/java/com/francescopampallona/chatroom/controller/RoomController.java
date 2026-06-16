@@ -65,5 +65,17 @@ public class RoomController {
         );
     }
 
+    @PostMapping("/{roomId}/join")
+    public ResponseEntity<RoomDto> joinPublicRoom(
+            @PathVariable Long roomId,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                roomService.joinPublicRoom(roomId, user)
+        );
+    }
+
 
 }
