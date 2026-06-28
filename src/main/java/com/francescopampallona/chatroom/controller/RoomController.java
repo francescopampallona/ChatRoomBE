@@ -50,10 +50,8 @@ public class RoomController {
             @PathVariable Long id,
             Authentication authentication
     ) {
-        User user = (User) authentication.getPrincipal();
-
         return ResponseEntity.ok(
-                roomService.getRoomById(id, user)
+                roomService.getRoomById(id)
         );
     }
 

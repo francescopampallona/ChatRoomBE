@@ -12,6 +12,7 @@ import com.francescopampallona.chatroom.model.User;
 import com.francescopampallona.chatroom.repository.RoomMemberRepository;
 import com.francescopampallona.chatroom.repository.RoomRepository;
 import com.francescopampallona.chatroom.repository.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,18 +62,9 @@ public class RoomService {
                 .toList();
     }
 
+    @PreAuthorize("@roomSecurity.isMember(#roomId, authentication)")
     @Transactional(readOnly = true)
-    public RoomDto getRoomById(Long roomId, User user) {
-
-        boolean isMember = roomMemberRepository.existsByRoomIdAndUserId(
-                roomId,
-                user.getId()
-        );
-
-        if (!isMember) {
-            throw new RuntimeException("Non sei autorizzato ad accedere a questa room");
-        }
-
+    public RoomDto getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("Room non trovata"));
 
