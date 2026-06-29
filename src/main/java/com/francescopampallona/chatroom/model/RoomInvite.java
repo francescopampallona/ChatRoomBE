@@ -2,12 +2,20 @@ package com.francescopampallona.chatroom.model;
 
 import com.francescopampallona.chatroom.enums.InviteStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "room_invites")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoomInvite {
 
     @Id
