@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/invite")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -35,5 +37,28 @@ public class InviteController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<InviteResponse>> getMyInvites(
+            Authentication authentication
+    ) {
+        User currentUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                inviteService.getMyPendingInvites(currentUser)
+        );
+    }
+
+    @PostMapping("/{inviteId}/accept")
+    public ResponseEntity<InviteResponse> acceptInvite(
+            @PathVariable Long inviteId,
+            Authentication authentication
+    ) {
+        User currentUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                inviteService.acceptInvite(inviteId, currentUser)
+        );
     }
 }

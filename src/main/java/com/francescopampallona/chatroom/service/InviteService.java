@@ -2,18 +2,23 @@ package com.francescopampallona.chatroom.service;
 
 import com.francescopampallona.chatroom.dto.response.InviteResponse;
 import com.francescopampallona.chatroom.enums.InviteStatus;
+import com.francescopampallona.chatroom.enums.RoomRole;
 import com.francescopampallona.chatroom.enums.RoomType;
 import com.francescopampallona.chatroom.mapper.RoomInviteMapper;
 import com.francescopampallona.chatroom.model.Room;
 import com.francescopampallona.chatroom.model.RoomInvite;
+import com.francescopampallona.chatroom.model.RoomMember;
 import com.francescopampallona.chatroom.model.User;
 import com.francescopampallona.chatroom.repository.RoomInviteRepository;
 import com.francescopampallona.chatroom.repository.RoomMemberRepository;
 import com.francescopampallona.chatroom.repository.RoomRepository;
 import com.francescopampallona.chatroom.repository.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class InviteService {
@@ -111,5 +116,51 @@ public class InviteService {
                 .invitedBy(currentUser)
                 .status(InviteStatus.PENDING)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<InviteResponse> getMyPendingInvites(User currentUser) {
+
+        return roomInviteRepository
+                .findByInvitedUserIdAndStatus(
+                        currentUser.getId(),
+                        InviteStatus.PENDING
+                )
+                .stream()
+                .map(roomInviteMapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    @PreAuthorize("@inviteSecurity.canAccept(#inviteId, authentication)")
+    public InviteResponse acceptInvite(Long inviteId, User currentUser) {
+
+        RoomInvite invite = roomInviteRepository.findById(inviteId)
+                .orElseThrow(() -> new RuntimeException("Invito non trovato"));
+
+        if (invite.getStatus() != InviteStatus.PENDING) {
+            throw new RuntimeException("Questo invito è già stato gestito");
+        }
+
+        boolean alreadyMember = roomMemberRepository.existsByRoomIdAndUserId(
+                invite.getRoom().getId(),
+                currentUser.getId()
+        );
+
+        if (alreadyMember) {
+            throw new RuntimeException("Sei già membro di questa room");
+        }
+
+        RoomMember roomMember = RoomMember.builder()
+                .room(invite.getRoom())
+                .user(currentUser)
+                .role(RoomRole.MEMBER)
+                .build();
+
+        roomMemberRepository.save(roomMember);
+
+        invite.setStatus(InviteStatus.ACCEPTED);//modifica salvata in automatico dal meccanismo del DirtyChecking
+
+        return roomInviteMapper.toDto(invite);
     }
 }
