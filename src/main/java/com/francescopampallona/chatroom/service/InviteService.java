@@ -163,4 +163,20 @@ public class InviteService {
 
         return roomInviteMapper.toDto(invite);
     }
+
+    @Transactional
+    @PreAuthorize("@inviteSecurity.canAccept(#inviteId, authentication)")
+    public InviteResponse declineInvite(Long inviteId) {
+
+        RoomInvite invite = roomInviteRepository.findById(inviteId)
+                .orElseThrow(() -> new RuntimeException("Invito non trovato"));
+
+        if (invite.getStatus() != InviteStatus.PENDING) {
+            throw new RuntimeException("Questo invito è già stato gestito");
+        }
+
+        invite.setStatus(InviteStatus.DECLINED);
+
+        return roomInviteMapper.toDto(invite);
+    }
 }
