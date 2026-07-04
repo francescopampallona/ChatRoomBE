@@ -64,7 +64,8 @@ public class InviteController {
 
     @PostMapping("/{inviteId}/decline")
     public ResponseEntity<InviteResponse> declineInvite(
-            @PathVariable Long inviteId
+            @PathVariable Long inviteId,
+            Authentication authentication
     ) {
         return ResponseEntity.ok(
                 inviteService.declineInvite(inviteId)
