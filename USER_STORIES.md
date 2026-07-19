@@ -160,6 +160,19 @@ così da recuperare le conversazioni passate.
 - Ordinamento per data
 
 ---
+### US-010 — Visualizzazione membri della room
+
+**Priorità:** HIGH
+
+**Descrizione:**
+Come utente membro di una room voglio visualizzare l'elenco dei membri così da sapere chi partecipa alla conversazione.
+
+**Criteri di accettazione:**
+
+Solo i membri della room possono vedere l'elenco.
+Visualizzazione di username e ruolo (OWNER, ADMIN, MEMBER).
+Elenco ordinato per ruolo e poi username.
+---
 
 ## 🔒 Sicurezza
 
